@@ -6,6 +6,7 @@ import Pokemon from './Pokemon';
 function Main() {
   const [pokemonList, setPokemonList] = useState([]);
   const [selectedPokemon, setSelectedPokemon] = useState(null);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,15 +26,32 @@ function Main() {
     }
   };
 
+  const handleSearch = () => {
+    const foundPokemon = pokemonList.find((pokemon) =>
+      pokemon.name.toLowerCase().includes(search.toLowerCase())
+    );
+    if (foundPokemon) {
+      fetchPokemonDetails(foundPokemon.url);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div>
-      <select onChange={(e) => fetchPokemonDetails(e.target.value)} defaultValue=''>
-        <option value='' disabled>Select a Pokémon</option>
-        {pokemonList.map((pokemon, index) => (
-          <option key={index} value={pokemon.url}>{pokemon.name}</option>
-        ))}
-      </select>
-      {selectedPokemon ? <Pokemon pokemon={selectedPokemon} /> : 'Please select a Pokémon'}
+      <input
+        type='text'
+        placeholder='Search for a Pokémon'
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        onKeyDown={handleKeyDown}
+      />
+      <button onClick={handleSearch}>Search</button>
+      {selectedPokemon ? <Pokemon pokemon={selectedPokemon} /> : null}
     </div>
   );
 }
